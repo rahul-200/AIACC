@@ -1,0 +1,44 @@
+class TaxiDriverAgent:
+    def __init__(self, current_location, destination):
+        self.current_location = current_location
+        self.destination = destination
+
+    def move_to_destination(self):
+        x_diff = self.destination[0] - self.current_location[0]
+        y_diff = self.destination[1] - self.current_location[1]
+
+        if x_diff > 0:
+            self.current_location = (self.current_location[0] + 1, self.current_location[1])
+        elif x_diff < 0:
+            self.current_location = (self.current_location[0] - 1, self.current_location[1])
+        elif y_diff > 0:
+            self.current_location = (self.current_location[0], self.current_location[1] + 1)
+        elif y_diff < 0:
+            self.current_location = (self.current_location[0], self.current_location[1] - 1)
+
+    def pickup_passenger(self):
+        print("Picking up passenger at:", self.current_location)
+        self.destination = tuple(int(x) for x in input("Enter destination coordinates (x y): ").split())
+
+    def drop_off_passenger(self):
+        print("Dropping off passenger at:", self.current_location)
+
+# Example Usage
+current_location = tuple(int(x) for x in input("Enter current location coordinates (x y): ").split())
+destination = tuple(int(x) for x in input("Enter destination coordinates (x y): ").split())
+taxi = TaxiDriverAgent(current_location, destination)
+
+print("Taxi current location:", taxi.current_location)
+print("Taxi destination:", taxi.destination)
+
+while taxi.current_location != taxi.destination:
+    taxi.move_to_destination()
+
+taxi.pickup_passenger()
+print("Passenger on board, heading to destination...")
+
+while taxi.current_location != taxi.destination:
+    taxi.move_to_destination()
+
+taxi.drop_off_passenger()
+print("Passenger dropped off successfully.")

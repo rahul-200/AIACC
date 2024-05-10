@@ -1,0 +1,15 @@
+import random
+
+def estimate_temperature(base_temperature, uncertainty_factor):
+
+    uncertainty = base_temperature * uncertainty_factor
+
+    actual_temperature = base_temperature + random.uniform(-uncertainty, uncertainty)
+    return actual_temperature
+base_temperature = 25
+uncertainty_factor = 0.1
+
+
+for i in range(5):
+    actual_temperature = estimate_temperature(base_temperature, uncertainty_factor)
+    print(f"Scenario {i+1}: Estimated temperature = {actual_temperature:.2f} Celsius")

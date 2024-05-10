@@ -1,0 +1,53 @@
+def unify(x, y, substitution):
+    if substitution is None:
+        return None
+    elif x == y:
+        return substitution
+    elif isinstance(x, str) and x.islower():
+        return unify_var(x, y, substitution)
+    elif isinstance(y, str) and y.islower():
+        return unify_var(y, x, substitution)
+    elif isinstance(x, list) and isinstance(y, list) and len(x) == len(y):
+        return unify(x[1:], y[1:], unify(x[0], y[0], substitution))
+    else:
+        return None
+
+def unify_var(var, x, substitution):
+    if var in substitution:
+        return unify(substitution[var], x, substitution)
+    elif x in substitution:
+        return unify(var, substitution[x], substitution)
+    else:
+        substitution[var] = x
+        return substitution
+
+def resolve(clause1, clause2):
+    resolvents = []
+    for literal1 in clause1:
+        for literal2 in clause2:
+            substitution = unify(literal1, negate(literal2), {})
+            if substitution is not None:
+                resolvents.append(apply(substitution, clause1 + clause2))
+    return resolvents
+
+def negate(literal):
+    if isinstance(literal, list) and len(literal) == 2 and literal[0] == 'not':
+        return literal[1]
+    else:
+        return ['not', literal]
+
+def apply(substitution, clause):
+    return [apply_sub(substitution, literal) for literal in clause]
+
+def apply_sub(substitution, term):
+    if isinstance(term, str) and term in substitution:
+        return substitution[term]
+    elif isinstance(term, list):
+        return [apply_sub(substitution, subterm) for subterm in term]
+    else:
+        return term
+
+# Example usage:
+clause1 = [['not', 'P'], 'Q']
+clause2 = ['P', 'R']
+print(resolve(clause1, clause2))

@@ -1,0 +1,29 @@
+from sympy import symbols, And, Or, Implies, Not, satisfiable
+# Define symbols
+A, B, C, D = symbols('A B C D')
+
+# Define premises
+premises = [
+    Implies(A, B),
+    Implies(B, C),
+    Implies(C, D),
+    Or(Not(A), D)
+]
+
+# Apply inference rules to derive conclusions
+conclusions = [
+    Implies(A, D),          # Hypothetical Syllogism
+    Implies(And(A, B), C),  # Simplification
+    Implies(A, Or(A, B)),   # Addition
+    Implies(And(Not(A), B), B),  # Disjunctive Syllogism
+    Implies(And(Implies(A, B), Implies(B, C)), Implies(A, C)),  # Modus Ponens
+    Implies(B, A),          # Not derivable
+    Implies(And(A, Not(A)), B)  # Not derivable
+]
+
+# Check if the conclusions are satisfiable given the premises
+for conclusion in conclusions:
+    if satisfiable(And(*premises, Not(conclusion))):
+        print(f"The conclusion '{conclusion}' is not derivable from the premises.")
+    else:
+        print(f"The conclusion '{conclusion}' is derivable from the premises.")

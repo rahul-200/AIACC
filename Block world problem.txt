@@ -1,0 +1,73 @@
+class BlockWorld:
+    def __init__(self):
+        self.state = {'A': 'table', 'B': 'table', 'C': 'table'}
+        self.goal_state = {'A': 'table', 'B': 'C', 'C': 'table'}
+        self.actions = [('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('C', 'A'), ('C', 'B')]
+        self.visited_states = set()
+
+    def move(self, block, destination):
+        if block not in self.state or destination not in ['table', 'A', 'B', 'C']:
+            print("Invalid move!")
+            return False
+
+        if self.state[block] == destination:
+            return False
+
+        self.state[block] = destination
+        return True
+
+    def is_goal_state(self):
+        return self.state == self.goal_state
+
+    def apply_action(self, action):
+        block, destination = action
+        return self.move(block, destination)
+
+    def undo_action(self, action):
+        block, destination = action
+        if destination == 'table':
+            destination = self.state[block]
+        else:
+            destination = 'table'
+        return self.move(block, destination)
+
+    def dfs_search(self, max_depth=10, current_depth=0, path=[]):
+        if current_depth > max_depth:
+            return None
+
+        if self.is_goal_state():
+            return path
+
+        for action in self.actions:
+            if self.apply_action(action):
+                if tuple(self.state.items()) not in self.visited_states:
+                    self.visited_states.add(tuple(self.state.items()))
+                    result = self.dfs_search(max_depth, current_depth + 1, path + [action])
+                    if result is not None:
+                        return result
+                self.undo_action(action)
+
+        return None
+
+    def print_state(self):
+        print("Current State:")
+        for block, location in self.state.items():
+            print("Block", block, "is on", location)
+        print("\n")
+
+def main():
+    world = BlockWorld()
+    world.print_state()
+
+    solution = world.dfs_search()
+    if solution:
+        print("Solution found:")
+        for move in solution:
+            print("Move block", move[0], "to", move[1])
+            world.apply_action(move)
+            world.print_state()
+    else:
+        print("No solution found.")
+
+if __name__ == "__main__":
+    main()

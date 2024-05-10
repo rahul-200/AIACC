@@ -1,0 +1,26 @@
+import heapq
+def distance(city1, city2):
+    return ((city1[0] - city2[0]) ** 2 + (city1[1] - city2[1]) ** 2) ** 0.5
+def tsp_a_star(start_city, cities):
+    def heuristic(state, remaining_cities):
+        total_distance = 0
+        for city in remaining_cities:
+            min_dist = min([(distance(city, next_city), next_city) for next_city in remaining_cities], key=lambda x: x[0])
+            total_distance += min_dist[0]
+        return total_distance
+    def cost(state, next_city):
+        return distance(state, next_city)
+    open_list = [(heuristic(start_city, cities), start_city, cities)]
+    while open_list:
+        _, current_city, remaining_cities = heapq.heappop(open_list)
+        if not remaining_cities:
+            return current_city
+        for next_city in remaining_cities:
+            new_remaining_cities = [city for city in remaining_cities if city != next_city]
+            new_cost = cost(current_city, next_city)
+            new_heuristic = heuristic(next_city, new_remaining_cities)
+            heapq.heappush(open_list, (new_cost + new_heuristic, next_city, new_remaining_cities))
+cities = [(0, 0), (1, 2), (3, 1), (5, 2)]
+start_city = cities[0]
+optimal_path = tsp_a_star(start_city, cities)
+print("Optimal Path:", optimal_path)
